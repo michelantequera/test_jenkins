@@ -4,6 +4,7 @@ pipeline {
     stage('fetch') {
       environment {
         tenant_country = sh(script: 'git diff main origin/main --name-only "*.yml"' ,returnStdout: true).trim()
+        mutation = sh(script: 'git diff main origin/main --name-only "*.rb"' ,returnStdout: true).trim()
       }
       steps {
         sh 'git fetch --force'
@@ -12,7 +13,9 @@ pipeline {
           datas = readYaml (file: "${env.tenant_country}")
         }
 
-        echo datas.clusters.toString()
+        echo mutation
+        echo datas[environment]
+        echo sh (script: "rails r ${mutation}", returnStdout: true)
       }
     }
 
